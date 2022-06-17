@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+    <title>Directory</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="display-1">Phone Numbers</h1>
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Phone</th>
+            </thead>
+            <tbody>
+                {% for emp in emps %}
+                <tr>
+                    <td>{{emp.name}}</td>
+                    <td>{{emp.dept.dept_name}}</td>
+                    <td>
+                        {% if emp.dept.phone %}
+                        {{emp.dept.phone}}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/employees/new" class="btn btn-success">Add Employee</a>
+    </div>
+</body>
+</html>
