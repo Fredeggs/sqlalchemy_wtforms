@@ -1,7 +1,7 @@
 from crypt import methods
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from forms import AddSnackForm, NewEmployeeForm
+from forms import AddSnackForm, EmployeeForm
 from models import (
     db,
     connect_db,
@@ -42,7 +42,6 @@ def list_phones():
 def add_snack():
     form = AddSnackForm()
     if form.validate_on_submit():
-        raise
         # Is this a POST request AND is the token valid?
         name = form.name.data
         price = form.price.data
@@ -54,8 +53,10 @@ def add_snack():
 
 @app.route("/employees/new", methods=["GET", "POST"])
 def add_employee():
-    form = NewEmployeeForm()
-
+    form = EmployeeForm()
+    depts = db.session.query(Department).all()
+    depts_tuples = [(d.dept_code, d.dept_name) for d in depts]
+    form.dept_code.choices = depts_tuples
     if form.validate_on_submit():
         name = form.name.data
         state = form.state.data
@@ -67,3 +68,21 @@ def add_employee():
         return redirect("/phones")
     else:
         return render_template("add_employee_form.html", form=form)
+
+
+@app.route('/employees/<int:id>/edit', methods=["GET", "POST"])
+def edit_employee(id):
+    emp = Employee.query.get_or_404(id)
+    form = EmployeeForm(obj=emp)
+    depts = db.session.query(Department).all()
+    depts_tuples = [(d.dept_code, d.dept_name) for d in depts]
+    form.dept_code.choices = depts_tuples
+
+    if form.validate_on_submit():
+        emp.name = form.name.data
+        emp.state = form.state.data
+        emp.dept_code = form.dept_code.data
+        db.session.commit()
+        return redirect('/phones')
+    else:
+        return render_template('edit-employee-form.html', form=form)
